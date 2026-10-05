@@ -2,11 +2,18 @@ pipeline {
     agent any
     
     stages {
-
-        // 4. Публикация отчетов в интерфейс Jenkins
         stage('Segmrep Rules 1.0') {
             steps {
-                sh 'bash ./script.sh'
+                script {
+                    // Передаем исходники и файл правил в Docker-контейнер Semgrep
+                    sh '''
+                        tar -cf - server1.js my-rule-explanations-2.yaml | docker run --rm -i returntocorp/semgrep sh -c "
+                            mkdir -p /src && \
+                            tar -xf - -C /src && \
+                            semgrep scan --config /src/my-rule-explanations-2.yaml /src/server1.js
+                        "
+                    '''
+                }
             }
         }
     }
