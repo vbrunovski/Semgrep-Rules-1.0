@@ -1,0 +1,18 @@
+rules:
+  - id: PROTOTYPE_POLLUTION
+    patterns:
+      - pattern: |
+          for(let $KEY in $SOURCE){
+            ...
+            $TARGET[$KEY] = ... 
+            ...  
+          }
+      - pattern-not-inside: |
+          if ($KEY === '__proto__' || $KEY === 'constructor' || $KEY === 'prototype') {
+            ...
+          }
+      - pattern-not-inside: |
+          if ($KEY === '__proto__' || $KEY === 'constructor' || $KEY === 'prototype') return;
+    message: "HIGH PROTOTYPE POLLUTION FOUND"
+    languages: [javascript, typescript]
+    severity: ERROR

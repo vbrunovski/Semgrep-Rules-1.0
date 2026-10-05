@@ -1,0 +1,8 @@
+rules:
+  - id: COMMAND_INJECTION
+    patterns: 
+      - pattern: exec($CMD, ...)
+      - pattern-not: exec("...", ...)
+    message: "CRITICAL ISSUE: USE EXECFILE INSTEAD OF EXEC"
+    languages: [javascript, typescript]
+    severity: ERROR

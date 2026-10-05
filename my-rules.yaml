@@ -1,0 +1,23 @@
+rules:
+  - id: custom-node-exec-injection
+    patterns:
+      - pattern: exec($CMD, ...)
+      - pattern-not: exec("...", ...)
+    message: "CRITICAL: Untrusted command injection in child_process.exec()! Use execFile with arguments array instead."
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  - id: custom-prototype-pollution-loop
+    patterns:
+      - pattern: |
+          for (let $KEY in $SOURCE) {
+            ...
+            $TARGET[$KEY] = ...;
+          }
+      - pattern-not-inside: |
+          if ($KEY === '__proto__' || $KEY === 'constructor' || $KEY === 'prototype') {
+            ...
+          }
+    message: "HIGH: Unsanitized object merge loop detected! Potential Prototype Pollution (CWE-1321)."
+    languages: [javascript, typescript]
+    severity: ERROR
