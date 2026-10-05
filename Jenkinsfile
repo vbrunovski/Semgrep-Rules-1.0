@@ -5,7 +5,13 @@ pipeline {
         stage('Semgrep Scan') {
             steps {
                 script {
-                    sh 'docker run --rm -v "${WORKSPACE}":/src -w /src returntocorp/semgrep semgrep scan --config /src/my-rule-explanations-2.yaml /src/server1.js'
+                    sh '''
+                        tar -cf - server1.js my-rule-explanations-2.yaml | docker run --rm -i returntocorp/semgrep sh -c "
+                            mkdir -p /src && \
+                            tar -xf - -C /src && \
+                            semgrep scan --config /src/my-rule-explanations-2.yaml /src/server1.js
+                        "
+                    '''
                 }
             }
         }
